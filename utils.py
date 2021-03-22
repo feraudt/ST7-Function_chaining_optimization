@@ -1,6 +1,7 @@
 from itertools import combinations, groupby
 import random
 import networkx as nx
+import matplotlib.pyplot as plt
 
 
 def make_connex(G):
@@ -15,3 +16,9 @@ def make_connex(G):
         G.add_edge(source, target)
 
     return G
+
+
+def plot_graph(G):
+    plt.plot()
+    nx.draw(G, with_labels=True)
+    plt.show()
