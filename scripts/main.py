@@ -36,6 +36,19 @@ physical_graph.add_edges_from(link)
 physical_graph = make_connex(physical_graph)
 
 # Affichage
+nb_nodes = physical_graph.number_of_nodes()
+slist = shell_list(nb_nodes, 5)
 plt.plot()
 nx.draw(physical_graph, with_labels=True)
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
