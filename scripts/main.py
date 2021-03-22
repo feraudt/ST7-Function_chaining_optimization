@@ -1,5 +1,9 @@
 import networkx as nx
 import random
+import matplotlib.pyplot as plt
+import time
+
+
 from utils import *
 # Graphe Physique
 
@@ -26,6 +30,7 @@ for i in range(nb_link):
 physical_graph = nx.Graph()
 physical_graph.add_nodes_from(server)
 physical_graph.add_edges_from(link)
+
 
 # On rend le graphe connexe si jamais
 physical_graph = make_connex(physical_graph)
