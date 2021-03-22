@@ -9,5 +9,5 @@ We chose to use the python library NetworkX for Steiner trees management.
 
 Documentation available at :
 
-        https://networkx.org/documentation/stable/index.html
+    https://networkx.org/documentation/stable/index.html
 
