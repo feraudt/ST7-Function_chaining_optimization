@@ -1,6 +1,7 @@
 from itertools import combinations, groupby
 import random
 import networkx as nx
+import matplotlib.pyplot as plt
 
 
 def make_connex(G):
@@ -24,3 +25,10 @@ def shell_list(nb_nodes, nb_group):
     print(slist)
     print("Nodes : ", nb_nodes)
     return slist
+
+
+def plot_graph(G):
+    plt.plot()
+    nx.draw(G, with_labels=True)
+    plt.show()
+

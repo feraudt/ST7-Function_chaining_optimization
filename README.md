@@ -1,8 +1,16 @@
-# ST7-Function_chaining_optimization
-Graph approach for the optimization of function chaining for IoT using Steiner trees. School project conducted by CentraleSupélec students.
+# Function chaining optimization
 
-## Packages install
+Graph approach for the optimization of function chaining for IoT using Steiner trees.  
+School project conducted by CentraleSupélec students.
 
-We chose to use the python library NetworkX for Steiner trees management.
+## Packages installation
+
+We chose to use the python library [NetworkX](https://networkx.org/) for graphs and Steiner trees management.  
+Install it with the following command :
 
     $ pip install networkx
+
+Documentation available at :
+
+    https://networkx.org/documentation/stable/index.html
+

@@ -36,19 +36,47 @@ physical_graph.add_edges_from(link)
 physical_graph = make_connex(physical_graph)
 
 # Affichage
-nb_nodes = physical_graph.number_of_nodes()
-slist = shell_list(nb_nodes, 5)
-plt.plot()
-nx.draw(physical_graph, with_labels=True)
-plt.show()
+plot_graph(physical_graph)
 
+# Graphe Virtuel
+virtual_link = []
+virtual_fonctions = []
+# première chaine
+nb_fonctions = random.randint(4, 7)
 
+for i in range(nb_fonctions):
+    cpu = random.randint(1, 5)
+    virtual_fonctions.append((i+1, {'capacity': cpu}))
 
+for i in range(nb_fonctions):
+    bandwidth = random.randint(5, 10)
+    virtual_link.append((i+1, i+2, {'bandwidth': bandwidth}))
 
+# Deuxième chaine le code est pas beau mais ça marche
+nb_fonctions = random.randint(4, 7)
 
+for i in range(nb_fonctions):
+    cpu = random.randint(1, 5)
+    # on met l'index 2 pour le deuxième élément de la chaine
+    index = len(virtual_fonctions)+1 if i != 2 else 2
+    virtual_fonctions.append((index, {'capacity': cpu}))
 
+n = len(virtual_link)
+for i in range(1, nb_fonctions):
+    bandwidth = random.randint(5, 10)
+    # Code pas beau qui met les bonnes valeurs pour la génération des links
+    if i == 1:
+        virtual_link.append((n+i+1, 2, {'bandwidth': bandwidth}))
+    elif i == 2:
+        virtual_link.append((2, n+i+2, {'bandwidth': bandwidth}))
+    else:
+        virtual_link.append((n+i+1, n+i+2, {'bandwidth': bandwidth}))
 
+# Génération
+virtual_graph = nx.DiGraph()
+virtual_graph.add_nodes_from(virtual_fonctions)
+virtual_graph.add_edges_from(virtual_link)
 
-
-
+# Affichage
+plot_graph(virtual_graph)
 
