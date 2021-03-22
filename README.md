@@ -6,3 +6,8 @@ Graph approach for the optimization of function chaining for IoT using Steiner t
 We chose to use the python library NetworkX for Steiner trees management.
 
     $ pip install networkx
+
+Documentation available at :
+
+        https://networkx.org/documentation/stable/index.html
+
