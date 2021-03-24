@@ -9,33 +9,15 @@ from utils import *
 
 ## Graphe Physique
 
-server = []
 nb_server = rd.randint(10, 20)
 
-for i in range(nb_server):
-    capacity = rd.randint(3, 10)
-    server.append((i+1, {'capacity': capacity}))
-
-link = []
 # nombre max de lien = n(n-1)/2
-nb_link = rd.randint(nb_server, int(nb_server*(nb_server-1)/4))
+min_link = rd.randint(nb_server-1, int(nb_server*(nb_server-1)/4))
 
-for i in range(nb_link):
-    s1 = rd.randint(1, nb_server+1)
-    s2 = rd.randint(1, nb_server+1)
-    while s2 == s1:
-        s2 = rd.randint(1, nb_server+1)
-    bandwidth = rd.randint(7, 15)
+range_cpu = (5, 10)
+range_bandwidth = (7, 15)
 
-    link.append((s1, s2, {'bandwidth': bandwidth}))
-
-physical_graph = nx.Graph()
-physical_graph.add_nodes_from(server)
-physical_graph.add_edges_from(link)
-
-
-# On rend le graphe connexe si jamais
-physical_graph = make_connex(physical_graph)
+physical_graph = random_connex_graph(nb_server, min_link, range_cpu, range_bandwidth)
 
 # Affichage
 plot_graph(physical_graph)
