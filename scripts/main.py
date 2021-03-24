@@ -18,7 +18,7 @@ for i in range(nb_server):
 
 link = []
 # nombre max de lien = n(n-1)/2
-nb_link = rd.randint(nb_server, nb_server*(nb_server-1)/2)
+nb_link = rd.randint(nb_server, int(nb_server*(nb_server-1)/4))
 
 for i in range(nb_link):
     s1 = rd.randint(1, nb_server+1)
