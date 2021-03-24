@@ -40,6 +40,7 @@ physical_graph = make_connex(physical_graph)
 # Affichage
 plot_graph(physical_graph)
 
+
 ## Graphe Virtuel
 
 virtual_link = []
