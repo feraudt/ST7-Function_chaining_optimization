@@ -133,8 +133,9 @@ def generate_flow(nodelist, range_cpu, range_bandwidth):
     # par exemple les attributs func de [5,6,7,4] seront [1,2,3,4]
     nodes = [(node, {'cpu': rd.randint(*range_cpu), 'func': i+1})
              for i, node in enumerate(nodelist)]
+    bwd = rd.randint(*range_bandwidth)  # Une seule bandwidth par flow
     edges = [(nodelist[i], nodelist[i+1],
-              {'bandwidth': rd.randint(*range_bandwidth)}) for i in range(len(nodelist)-1)]
+              {'bandwidth': bwd}) for i in range(len(nodelist)-1)]
 
     flow = nx.DiGraph()
     flow.add_nodes_from(nodes)
@@ -153,7 +154,8 @@ def generate_request(range_flow, range_node, range_cpu, range_bandwidth):
     # Probablilité d'utiliser une node d'une chaine précédente (de relier les deux chaines)
     proba_use_a_previous_node = 0.5
 
-    for flow in range(nb_flow):
+    for f
+    low in range(nb_flow):
         nb_nodes = rd.randint(*range_node)
 
         nodelist = []
@@ -186,3 +188,6 @@ def generate_request(range_flow, range_node, range_cpu, range_bandwidth):
         global_graph = nx.compose(global_graph, f)
 
     return (global_graph, flows)
+
+
+def dependance(flows):
