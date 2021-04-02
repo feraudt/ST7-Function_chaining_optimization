@@ -152,10 +152,9 @@ def generate_request(range_flow, range_node, range_cpu, range_bandwidth):
 
     existing_nodes = []
     # Probablilité d'utiliser une node d'une chaine précédente (de relier les deux chaines)
-    proba_use_a_previous_node = 0.5
+    proba_use_a_previous_node = 0.1
 
-    for f
-    low in range(nb_flow):
+    for flow in range(nb_flow):
         nb_nodes = rd.randint(*range_node)
 
         nodelist = []
@@ -191,3 +190,23 @@ def generate_request(range_flow, range_node, range_cpu, range_bandwidth):
 
 
 def dependance(flows):
+
+    total_nodes = [node for f in flows for node in list(f)]
+    # doublons = liste des nodes qui connectent les flows
+    doublons = list(
+        set([node for node in total_nodes if total_nodes.count(node) > 1]))
+
+    # = [(noeud,[flow1,flow2]) , ... ] si flow1 et flow2 sont connectés
+    dependant_flow = []
+    isdependant = []  # liste des chaines dépendantes afin d'obtenir les indépendantes plus bas
+    for noeud in doublons:
+        dependant_flow.append((noeud, []))
+        for f in flows:
+            if noeud in list(f):
+                if f not in isdependant:
+                    isdependant.append(f)
+                dependant_flow[-1][1].append(f)
+
+    independant_flow = [f for f in flows if f not in isdependant]
+
+    return (dependant_flow, independant_flow)

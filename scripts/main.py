@@ -26,7 +26,7 @@ plot_graph(physical_graph)
 
 # Graphe Virtuel
 # v de vrange est pour virtuel (pour pas mélanger)
-vrange_flow = (3, 5)
+vrange_flow = (1, 3)
 vrange_node = (4, 7)
 vrange_cpu = (1, 5)
 vrange_bandwidth = (5, 10)
@@ -39,3 +39,7 @@ for i, f in enumerate(flows):
     print('Flow {} : '.format(i+1), list(f))
     plot_graph(f)
 plot_graph(global_graph)
+
+(dependant_flow, independant_flow) = dependance(flows)
+print('noeud et chaines dépendantes:', dependant_flow)
+print('chaines indépendantes', independant_flow)
