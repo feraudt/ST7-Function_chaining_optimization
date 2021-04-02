@@ -25,44 +25,17 @@ plot_graph(physical_graph)
 
 
 # Graphe Virtuel
+# v de vrange est pour virtuel (pour pas mélanger)
+vrange_flow = (3, 5)
+vrange_node = (4, 7)
+vrange_cpu = (1, 5)
+vrange_bandwidth = (5, 10)
 
-virtual_link = []
-virtual_fonctions = []
-# première chaine
-nb_fonctions = rd.randint(4, 7)
+(global_graph, flows) = generate_request(
+    vrange_flow, vrange_node, vrange_cpu, vrange_bandwidth)
 
-for i in range(nb_fonctions):
-    cpu = rd.randint(1, 5)
-    virtual_fonctions.append((i+1, {'capacity': cpu}))
-
-for i in range(nb_fonctions-1):
-    bandwidth = rd.randint(5, 10)
-    virtual_link.append((i+1, i+2, {'bandwidth': bandwidth}))
-
-# Deuxième chaine le code est pas beau mais ça marche
-nb_fonctions = rd.randint(4, 7)
-
-for i in range(nb_fonctions):
-    cpu = rd.randint(1, 5)
-    # on met l'index 2 pour le deuxième élément de la chaine
-    index = len(virtual_fonctions)+1 if i != 2 else 2
-    virtual_fonctions.append((index, {'capacity': cpu}))
-
-n = len(virtual_link) + 1
-for i in range(nb_fonctions):
-    bandwidth = rd.randint(5, 10)
-    # Code pas beau qui met les bonnes valeurs pour la génération des links
-    if i == 0:
-        virtual_link.append((n+1, 2, {'bandwidth': bandwidth}))
-    elif i == 1:
-        virtual_link.append((2, n+2, {'bandwidth': bandwidth}))
-    else:
-        virtual_link.append((n+i, n+i+1, {'bandwidth': bandwidth}))
-
-# Génération
-virtual_graph = nx.DiGraph()
-virtual_graph.add_nodes_from(virtual_fonctions)
-virtual_graph.add_edges_from(virtual_link)
-
-# Affichage
-plot_graph(virtual_graph)
+# Affichage des flows un par un et de la requête
+for i, f in enumerate(flows):
+    print('Flow {} : '.format(i+1), list(f))
+    plot_graph(f)
+plot_graph(global_graph)
