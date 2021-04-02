@@ -1,7 +1,23 @@
 import networkx as nx
 import random as rd
-import utils
 
+
+def generate_flow(nodelist, range_cpu, range_bandwidth):
+    # Genere un flow à partir d'une liste de node, [5,6,7,4] par exemple
+
+    # Construct the list with cpu and bwd
+    # func représente le numéro de la fonction virtuelle (utile pour pas relier les flow n'importe comment)
+    # par exemple les attributs func de [5,6,7,4] seront [1,2,3,4]
+    nodes = [(node, {'cpu': rd.randint(*range_cpu), 'func': i+1})
+             for i, node in enumerate(nodelist)]
+    edges = [(nodelist[i], nodelist[i+1],
+              {'bandwidth': rd.randint(*range_bandwidth)}) for i in range(len(nodelist)-1)]
+
+    flow = nx.DiGraph()
+    flow.add_nodes_from(nodes)
+    flow.add_edges_from(edges)
+
+    return flow
 
 def generate_request(range_flow, range_node, range_cpu, range_bandwidth):
     # Une requête a une liste de flow (flows), chaque flow est un graphe orienté.
@@ -37,7 +53,7 @@ def generate_request(range_flow, range_node, range_cpu, range_bandwidth):
                 nodelist.append(len(existing_nodes) +
                                 len(nodelist)+1)  # Nouvelle node
 
-        flow = utils.generate_flow(nodelist, range_cpu, range_bandwidth)
+        flow = generate_flow(nodelist, range_cpu, range_bandwidth)
         flows.append(flow)
         existing_nodes += flow.nodes.data()
 
