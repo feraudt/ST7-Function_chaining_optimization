@@ -190,7 +190,6 @@ def generate_request(range_flow, range_node, range_cpu, range_bandwidth):
 
 
 def dependance(flows):
-
     total_nodes = [node for f in flows for node in list(f)]
     # doublons = liste des nodes qui connectent les flows
     doublons = list(
@@ -210,3 +209,9 @@ def dependance(flows):
     independant_flow = [f for f in flows if f not in isdependant]
 
     return (dependant_flow, independant_flow)
+
+
+def flow_sort(flows):
+    # Trie les chaines par bandwidth décroissante
+    # La key lambda va chercher la bwd du premier edge
+    return sorted(flows, key=lambda f: list(flows[0].edges(data=True))[0][2]['bandwidth'], reverse=True)
