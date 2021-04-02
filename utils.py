@@ -16,7 +16,7 @@ def shell_list(nb_nodes, nb_group):
 
 def plot_graph(G):
     plt.plot()
-    nx.draw(G, with_labels=True)
+    nx.draw(G, pos=nx.kamada_kawai_layout(G), with_labels=True)
     plt.show()
 
 
