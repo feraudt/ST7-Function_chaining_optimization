@@ -14,9 +14,10 @@ def shell_list(nb_nodes, nb_group):
     return slist
 
 
-def plot_graph(G):
+def plot_graph(G, title=''):
     plt.plot()
-    nx.draw(G, with_labels=True)
+    plt.title(title)
+    nx.draw(G, pos=nx.kamada_kawai_layout(G), with_labels=True)
     plt.show()
 
 
@@ -39,3 +40,31 @@ def bwd_sous_graph(G, bwd_seuil):
     F.remove_nodes_from(node_to_delete)
 
     return F
+
+
+def dependance(flows):
+    total_nodes = [node for f in flows for node in list(f)]
+    # doublons = liste des nodes qui connectent les flows
+    doublons = list(
+        set([node for node in total_nodes if total_nodes.count(node) > 1]))
+
+    # = [(noeud,[flow1,flow2]) , ... ] si flow1 et flow2 sont connectés
+    dependant_flow = []
+    isdependant = []  # liste des chaines dépendantes afin d'obtenir les indépendantes plus bas
+    for noeud in doublons:
+        dependant_flow.append((noeud, []))
+        for f in flows:
+            if noeud in list(f):
+                if f not in isdependant:
+                    isdependant.append(f)
+                dependant_flow[-1][1].append(f)
+
+    independant_flow = [f for f in flows if f not in isdependant]
+
+    return (dependant_flow, independant_flow)
+
+
+def flow_sort(flows):
+    # Trie les chaines par bandwidth décroissante
+    # La key lambda va chercher la bwd du premier edge
+    return sorted(flows, key=lambda f: list(flows[0].edges(data=True))[0][2]['bandwidth'], reverse=True)
