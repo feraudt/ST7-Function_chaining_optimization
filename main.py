@@ -64,8 +64,10 @@ flows = flow_sort(flows)
 # On travaille sur un sous graphe en bwd:
 graph_bwd = bwd_sous_graph(physical_graph, 10)
 # Rechercher un arbre de Steiner avec les noeuds communs des chaines ???? A quoi ça sert ?
-terminal_nodes = [tup[0] for tup in dependant_flow]
-steiner_tree = nxa.steinertree.steiner_tree(graph_bwd, terminal_nodes)
+virtual_terminal_nodes = [tup[0] for tup in dependant_flow]
+
+# Je suppose qu'il faudra prendre à terme les serveurs physiques sur lesquels seront placés les virtual_terminal_nodes ??
+steiner_tree = nxa.steinertree.steiner_tree(graph_bwd, virtual_terminal_nodes)
 
 plot_graph(graph_bwd, 'Graphe Physique réduit par bwd')
 plot_graph(steiner_tree, 'Steiner Tree')
