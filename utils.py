@@ -14,8 +14,9 @@ def shell_list(nb_nodes, nb_group):
     return slist
 
 
-def plot_graph(G):
+def plot_graph(G, title=''):
     plt.plot()
+    plt.title(title)
     nx.draw(G, pos=nx.kamada_kawai_layout(G), with_labels=True)
     plt.show()
 
