@@ -3,7 +3,6 @@
 import networkx as nx
 from networkx.algorithms import approximation as nxa
 import random as rd
-import matplotlib.pyplot as plt
 import time
 import os
 import shutil
@@ -39,13 +38,16 @@ save_graph(physical_graph, 'Graphe Physique')
 # Graphe Virtuel
 
 # v de vrange est pour virtuel (pour pas mélanger)
-vrange_flow = (1, 3)
+vrange_flow = (3, 3)
 vrange_node = (4, 7)
 vrange_cpu = (1, 5)
 vrange_bandwidth = (5, 10)
 
 (global_graph, flows) = graph_generation.generate_request(
     vrange_flow, vrange_node, vrange_cpu, vrange_bandwidth)
+
+# On trie les chaines par bwd décroissante
+flows = flow_sort(flows)
 
 # Affichage des flows un par un et de la requête
 for i, f in enumerate(flows):
@@ -61,32 +63,39 @@ if len(flows) > 1:
 
 # Étape 0
 
-# On trie les chaines par bwd décroissante
-flows = flow_sort(flows)
+
 # On distingue les chaines indépendantes et les dépendantes.
 common_nodes = get_common_nodes(flows)
-
+independant_flow = [flow for flow_id, flow in enumerate(
+    flows) if len(common_nodes[flow_id]) == 0]
+dependant_flow = [flow for flow_id, flow in enumerate(
+    flows) if len(common_nodes[flow_id]) > 0]
 
 # Étape 1
 
 # On place les chaines indépendantes -> inverser étape 1 et 2 non ?
 # On place simplement avec best fit, pas de problème
-# Attention bien mettre à jour le réseau physique
+# Attention à bien mettre à jour le réseau physique
 
 # Étape 2
 
 # On place les chaines dépendantes
-dependant_flow = [flow for flow_id, flow in enumerate(
-    flows) if len(common_nodes[i]) > 0]
 
 placed_flows = []
 
 for flow in dependant_flow:
+
+    # Variables pour les figures
+    flow_id = flows.index(flow)+1
+    fig_chemin = 'fig/Dependant_flow/flow_{}/'.format(flow_id)
+    flow_name = 'Flow {}'.format(flow_id)
+    print('\n'+flow_name)
+
     # On travaille sur un sous graphe en bwd:
     bwd = get_bwd(flow)
     graph_bwd = bwd_sous_graph(physical_graph, bwd)
-    save_graph(graph_bwd, 'Graphe Physique réduit par bwd',
-               'fig/Dependant_flow/flow_{}/'.format(flows.index(flow)+1))
+    save_graph(graph_bwd, flow_name +
+               ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
 
     # Rechercher un arbre de Steiner avec les noeuds communs de la chaine avec les chaines déjà placées
     # Si c'est la première chaine -> on la place librement (T = [])
@@ -95,18 +104,13 @@ for flow in dependant_flow:
     print('T = ', virtual_terminal_nodes)
 
     # Il faudra prendre à terme les serveurs physiques sur lesquels seront placés les virtual_terminal_nodes
+    # physical_terminal_nodes =
+
+    # Steiner tree minimisant la bandwidth utilisée donc le nombre d'arrête -> weight=None
     steiner_tree = nxa.steinertree.steiner_tree(
-        graph_bwd, virtual_terminal_nodes, weight='bandwidth')
+        graph_bwd, virtual_terminal_nodes, weight=None)
 
-    poids_arbre = 0
-    for edge in steiner_tree.edges(data=True):
-        poids_arbre += edge[2]['bandwidth']
-
-    print("Poids de l'arbre: ", poids_arbre)
-
-    if len(list(steiner_tree)) > 0:  # Si on a au moins 1 node dans le graphe (graphe non vide...)
-        #plot_graph(steiner_tree, 'Steiner Tree')
-        save_graph(steiner_tree, 'Steiner Tree',
-                   'fig/Dependant_flow/flow_{}/'.format(flows.index(flow)+1))
+    if len(list(steiner_tree)) > 0:  # Si on a au moins 1 node dans le graphe (sinon erreur...)
+        save_graph(steiner_tree, flow_name + ' Steiner Tree', fig_chemin)
 
     placed_flows.append(flow)
