@@ -2,6 +2,7 @@ from itertools import combinations, groupby
 import random as rd
 import networkx as nx
 import matplotlib.pyplot as plt
+import os
 
 
 def shell_list(nb_nodes, nb_group):
@@ -19,6 +20,14 @@ def plot_graph(G, title=''):
     plt.title(title)
     nx.draw(G, pos=nx.kamada_kawai_layout(G), with_labels=True)
     plt.show()
+
+
+def save_graph(G, title='', chemin='fig/'):
+    if not os.path.isdir(chemin):
+        os.makedirs(chemin)
+    fig = plt.figure()
+    plot_graph(G, title)
+    fig.savefig(chemin + title + '.png')
 
 
 def bwd_sous_graph(G, bwd_seuil):
@@ -42,29 +51,28 @@ def bwd_sous_graph(G, bwd_seuil):
     return F
 
 
-def dependance(flows):
+def get_common_nodes(flows):
+    # Retourne une liste contenant pour chaque flow dans flows la liste des noeuds en commun
+
     total_nodes = [node for f in flows for node in list(f)]
     # doublons = liste des nodes qui connectent les flows
     doublons = list(
         set([node for node in total_nodes if total_nodes.count(node) > 1]))
 
-    # = [(noeud,[flow1,flow2]) , ... ] si flow1 et flow2 sont connectés
-    dependant_flow = []
-    isdependant = []  # liste des chaines dépendantes afin d'obtenir les indépendantes plus bas
-    for noeud in doublons:
-        dependant_flow.append((noeud, []))
-        for f in flows:
-            if noeud in list(f):
-                if f not in isdependant:
-                    isdependant.append(f)
-                dependant_flow[-1][1].append(f)
+    return [[noeud for noeud in doublons if noeud in flow] for flow in flows]
 
-    independant_flow = [f for f in flows if f not in isdependant]
 
-    return (dependant_flow, independant_flow)
+def dependance(flow, flows):
+    # Renvoie les noeuds de flow présent dans flows (il ne faut pas que flow appartienne à flows du coup)
+    total_nodes = [node for f in flows for node in list(f)]
+    return [node for node in flow if node in total_nodes]
+
+
+def get_bwd(flow):
+    return list(flow.edges(data=True))[0][2]['bandwidth']
 
 
 def flow_sort(flows):
     # Trie les chaines par bandwidth décroissante
     # La key lambda va chercher la bwd du premier edge
-    return sorted(flows, key=lambda f: list(flows[0].edges(data=True))[0][2]['bandwidth'], reverse=True)
+    return sorted(flows, key=lambda f: get_bwd(f), reverse=True)
