@@ -1,4 +1,4 @@
-## Dependencies
+# Dependencies
 
 import networkx as nx
 from networkx.algorithms import approximation as nxa
@@ -22,7 +22,7 @@ for files in os.listdir(dir):
     except OSError:
         os.remove(path)
 
-## Graphe Physique
+# Graphe Physique
 nb_server = rd.randint(10, 20)
 # nombre max de lien = n(n-1)/2
 min_link = rd.randint(nb_server-1, int(nb_server*(nb_server-1)/4))
@@ -36,17 +36,18 @@ physical_graph = graph_generation.random_connex_graph(
 save_graph(physical_graph, 'Graphe Physique')
 
 
-## Graphe Virtuel
+# Graphe Virtuel
 
 # v de vrange est pour virtuel (pour pas mélanger)
-vrange_flow = (3, 4)
+vrange_flow = (2, 3)
 vrange_node = (4, 7)
 vrange_cpu = (1, 5)
 vrange_bandwidth = (5, 10)
 # Probablilité d'utiliser une node d'une chaine précédente (de relier les deux chaines)
-proba_dependance = 0.2
+proba_dependance = 0.5
 
-(global_graph, flows) = graph_generation.generate_request(vrange_flow, vrange_node, vrange_cpu, vrange_bandwidth, proba_dependance)
+(global_graph, flows) = graph_generation.generate_request(
+    vrange_flow, vrange_node, vrange_cpu, vrange_bandwidth, proba_dependance)
 
 # On trie les chaines par bwd décroissante
 flows = flow_sort(flows)
@@ -66,7 +67,7 @@ if len(flows) > 1:
 # Place les chaines sans utiliser les teiner trees
 available_graph = nx.Graph.copy(physical_graph)
 placed_flows = []
-for flow in flows :
+for flow in flows:
     # Variables pour les figures
     flow_id = flows.index(flow)+1
     fig_chemin = 'fig/flows/flow_{}/'.format(flow_id)
@@ -76,13 +77,24 @@ for flow in flows :
     # On travaille sur un sous graphe en bwd:
     bwd = get_bwd(flow)
     graph_bwd = bwd_sous_graph(available_graph, bwd)
-    save_graph(graph_bwd, flow_name + ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
+    save_graph(graph_bwd, flow_name +
+               ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
 
     placed_flow = best_fit_nodes(flow, available_graph)
     placed_flows.append(placed_flow)
 
+    # On affiche le placement
+    flow_view = []
+    servers_view = []
+    for func in placed_flow.nodes(data=True):
+        flow_view.append(func[0])
+        servers_view.append(func[1]['place'])
+    print('Functions : ', flow_view)
+    print('Servers : ', servers_view)
+
+
 # Approche avec steiner trees
-## Étape 0
+# Étape 0
 
 # On distingue les chaines indépendantes et les dépendantes.
 common_nodes = get_common_nodes(flows)
@@ -93,7 +105,7 @@ dependant_flow = [flow for flow_id, flow in enumerate(
 # On initialise le graph physique disponnible
 available_graph = nx.Graph.copy(physical_graph)
 
-## Étape 1
+# Étape 1
 
 # On place les chaines dépendantes
 
@@ -131,13 +143,13 @@ for flow in dependant_flow:
 
     placed_flows.append(flow)
 
-## Étape 2
+# Étape 2
 
 # On place les chaines indépendantes -> inverser étape 1 et 2 non ?
 # On place les fonctions sur les serveurs par best fit
 
 indep_placed_flows = []
-for flow in independant_flow :
+for flow in independant_flow:
     # Variables pour les figures
     flow_id = independant_flow.index(flow)+1
     fig_chemin = 'fig/Independant_flow/flow_{}/'.format(flow_id)
@@ -147,11 +159,8 @@ for flow in independant_flow :
     # On travaille sur un sous graphe en bwd:
     bwd = get_bwd(flow)
     graph_bwd = bwd_sous_graph(available_graph, bwd)
-    save_graph(graph_bwd, flow_name + ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
+    save_graph(graph_bwd, flow_name +
+               ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
 
     placed_flow = best_fit_nodes(flow, available_graph)
     indep_placed_flows.append(placed_flow)
-
-
-
-
