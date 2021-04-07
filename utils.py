@@ -96,8 +96,12 @@ def get_common_nodes(flows):
 
 def dependance(flow, flows):
     # Renvoie les noeuds de flow présent dans flows (il ne faut pas que flow appartienne à flows du coup)
-    total_nodes = [node for f in flows for node in list(f)]
-    return [node for node in flow if node in total_nodes]
+    dependant_nodes = set()
+    for f in flows:
+        for node in f.nodes:
+            if node in flow:
+                dependant_nodes.add(node)
+    return list(dependant_nodes)
 
 
 def get_bwd(flow):
