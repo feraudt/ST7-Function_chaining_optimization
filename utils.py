@@ -15,18 +15,40 @@ def shell_list(nb_nodes, nb_group):
     return slist
 
 
-def plot_graph(G, title=''):
+def plot_graph(G, title='', bwd=False, cpu=False):
+
     plt.plot()
     plt.title(title)
-    nx.draw(G, pos=nx.kamada_kawai_layout(G), with_labels=True)
+    pos = nx.kamada_kawai_layout(G)
+    nx.draw(G, pos, with_labels=True)
+
+    if bwd:
+        elabels = {}
+        for u, v, data in G.edges(data=True):
+            elabels[(u, v)] = str(data['bandwidth'])
+
+        nx.draw_networkx_edge_labels(
+            G, pos, edge_labels=elabels, font_size=8, font_color='darkgreen')
+
+    if cpu:
+        clabels = {}
+        for u, data in G.nodes(data=True):
+            clabels[u] = str(data['cpu'])
+        poshigher = {}
+        y_off = 0.1
+        for k, v in pos.items():
+            poshigher[k] = (v[0], v[1]+y_off)
+        nx.draw_networkx_labels(
+            G, poshigher, labels=clabels, font_size=10, font_color='darkred')
+
     plt.show()
 
 
-def save_graph(G, title='', chemin='fig/'):
+def save_graph(G, title='', chemin='fig/', bwd=False, cpu=False):
     if not os.path.isdir(chemin):
         os.makedirs(chemin)
     fig = plt.figure()
-    plot_graph(G, title)
+    plot_graph(G, title, bwd, cpu)
     fig.savefig(chemin + title + '.png')
 
 
