@@ -103,11 +103,6 @@ def cpu_sous_graph(G, cpu_seuil):
     return F
 
 
-def find_origin_chain(flow):
-    functions = [func for func in flow.nodes()]
-    for fr, to in flow.edges() :
-        functions.remove(to)
-
 
 
 
