@@ -9,7 +9,7 @@ def random_connex_graph(nb_nodes, min_edges, range_cpu, range_bandwidth):
 
     for node in graph.nodes:
         cpu = rd.randint(*range_cpu)
-        graph.add_node(node, cpu=cpu)
+        graph.add_node(node, cpu=cpu, functions=[])
 
     components = nx.connected_components(graph)
     component_combinations = list(combinations(components, 2))

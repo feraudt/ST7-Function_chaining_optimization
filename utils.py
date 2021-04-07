@@ -76,3 +76,14 @@ def flow_sort(flows):
     # Trie les chaines par bandwidth décroissante
     # La key lambda va chercher la bwd du premier edge
     return sorted(flows, key=lambda f: get_bwd(f), reverse=True)
+
+
+
+
+
+
+
+
+
+
+
