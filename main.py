@@ -123,6 +123,7 @@ dependant_flow = [flow for flow_id, flow in enumerate(
 available_graph = copy.deepcopy(physical_graph)
 placed_flows = []
 placed_physical_flows = []
+chemins = []
 
 # Étape 1
 
@@ -172,6 +173,7 @@ for flow in dependant_flow:
 
     placed_flow = best_fit_nodes(flow, available_graph)
     placed_flows.append(placed_flow)
+    chemins.append(worst_fit_path(placed_flow, available_graph))
 
     # On affiche le placement
     flow_view = []
@@ -181,12 +183,11 @@ for flow in dependant_flow:
         servers_view.append(func[1]['place'])
     print('Functions : ', flow_view)
     print('Servers : ', servers_view)
+    print('Chemin : ', chemin_to_print(chemins[-1]))
 
     physical_flow = nx.Graph()
     physical_flow.add_nodes_from(servers_view)
-    for x, y in zip(servers_view[:-1], servers_view[1:]):
-        # à remplacer par le path
-        physical_flow.add_edge(x, y)
+    physical_flow.add_edges_from(chemin_to_edges(chemins[-1]))
 
     placed_physical_flows.append(physical_flow)
 

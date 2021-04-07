@@ -161,13 +161,18 @@ def paths_to_function(start_func, end_func, bwd, placed_flow, graph_bwd, availab
 
 def get_path(rev_by_step, end_server, bwd, available_graph):
     chemin = [(end_server, rev_by_step[0][end_server]['function'])]
+    modified_edges = []
     for k in range(len(rev_by_step)-1):
         parent = rev_by_step[k][chemin[-1][0]]['parent']
-        edge_attr = available_graph.edges[parent, chemin[-1][0]]
-        new_edge = (parent, chemin[-1][0],
-                    {'bandwidth': edge_attr['bandwidth'] - bwd})
-        u, v, data = new_edge
-        available_graph.add_edge(u, v, bandwidth=data['bandwidth'])
+        u, v = parent, chemin[-1][0]
+        edge_attr = available_graph.edges[u, v]
+
+        if (u, v) not in modified_edges:
+            available_graph.edges()[
+                u, v]['bandwidth'] = edge_attr['bandwidth'] - bwd
+            modified_edges.append((u, v))
+            modified_edges.append((v, u))
+
         if k < len(rev_by_step) - 2:
             chemin.append((parent, rev_by_step[k+1][parent]['function']))
     return list(reversed(chemin))
