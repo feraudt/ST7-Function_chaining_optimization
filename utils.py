@@ -77,7 +77,26 @@ def flow_sort(flows):
     # La key lambda va chercher la bwd du premier edge
     return sorted(flows, key=lambda f: get_bwd(f), reverse=True)
 
+def cpu_sous_graph(G, cpu_seuil):
+    # On note les nodes a supprimer
+    nodes_to_delete = []
 
+    for node in G.nodes() :
+        if G.nodes[node]['cpu'] <  cpu_seuil :
+            nodes_to_delete.append(node)
+
+    # On les supprime de la copie du graph
+    F = nx.Graph.copy(G)
+    F.remove_nodes_from(nodes_to_delete)
+
+    # On supprime les nodes isoles
+    nodes_to_delete = []
+    for node in F.nodes() :
+        if len(list(F.neighbors(node))) == 0:
+            nodes_to_delete.append(node)
+    F.remove_nodes_from(nodes_to_delete)
+
+    return F
 
 
 

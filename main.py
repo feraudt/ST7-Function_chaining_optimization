@@ -79,9 +79,10 @@ available_graph = nx.Graph.copy(physical_graph)
 # On place les chaines indépendantes -> inverser étape 1 et 2 non ?
 # On place les fonctions sur les serveurs par best fit
 
+indep_placed_flows = []
 for flow in independant_flow :
     # Variables pour les figures
-    flow_id = flows.index(flow)+1
+    flow_id = independant_flow.index(flow)+1
     fig_chemin = 'fig/Independant_flow/flow_{}/'.format(flow_id)
     flow_name = 'Flow {}'.format(flow_id)
     print('\n'+flow_name)
@@ -89,10 +90,10 @@ for flow in independant_flow :
     # On travaille sur un sous graphe en bwd:
     bwd = get_bwd(flow)
     graph_bwd = bwd_sous_graph(available_graph, bwd)
-    save_graph(graph_bwd, flow_name +
-               ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
+    save_graph(graph_bwd, flow_name + ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
 
-    placed_flow = best_fit_nodes(flow, graph_bwd, available_graph)
+    placed_flow = best_fit_nodes(flow, available_graph)
+    indep_placed_flows.append(placed_flow)
 
 
 ## Étape 2
