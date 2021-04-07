@@ -19,15 +19,13 @@ def generate_flow(nodelist, range_cpu, range_bandwidth):
 
     return flow
 
-def generate_request(range_flow, range_node, range_cpu, range_bandwidth):
+def generate_request(range_flow, range_node, range_cpu, range_bandwidth, proba_use_a_previous_node):
     # Une requête a une liste de flow (flows), chaque flow est un graphe orienté.
     # Elle a aussi un graphe global (global_graph) qui représente toutes les chaines sur le même graphe
     flows = []
     nb_flow = rd.randint(*range_flow)
 
     existing_nodes = []
-    # Probablilité d'utiliser une node d'une chaine précédente (de relier les deux chaines)
-    proba_use_a_previous_node = 0.5
 
     for flow in range(nb_flow):
         nb_nodes = rd.randint(*range_node)
