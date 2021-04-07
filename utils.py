@@ -16,12 +16,19 @@ def shell_list(nb_nodes, nb_group):
     return slist
 
 
-def plot_graph(G, title='', bwd=False, cpu=False):
+def plot_graph(G, title='', bwd=False, cpu=False, flow=None):
 
     plt.plot()
     plt.title(title)
     pos = nx.kamada_kawai_layout(G)
-    nx.draw(G, pos, with_labels=True)
+
+    color_map = ['green' if flow and node in flow.nodes(
+    ) else '#1f78b4' for node in G.nodes()]
+    edge_color_map = ['green' if flow and edge in flow.edges(
+    ) else 'k' for edge in G.edges()]
+
+    nx.draw(G, pos, node_color=color_map,
+            edge_color=edge_color_map, with_labels=True)
 
     if bwd:
         elabels = {}
@@ -45,11 +52,11 @@ def plot_graph(G, title='', bwd=False, cpu=False):
     plt.show()
 
 
-def save_graph(G, title='', chemin='fig/', bwd=False, cpu=False):
+def save_graph(G, title='', chemin='fig/', bwd=False, cpu=False, flow=None):
     if not os.path.isdir(chemin):
         os.makedirs(chemin)
     fig = plt.figure()
-    plot_graph(G, title, bwd, cpu)
+    plot_graph(G, title, bwd, cpu, flow)
     fig.savefig(chemin + title + '.png')
 
 
@@ -127,16 +134,5 @@ def cpu_sous_graph(G, cpu_seuil):
 
 def find_origin_chain(flow):
     functions = [func for func in flow.nodes()]
-    for fr, to in flow.edges() :
+    for fr, to in flow.edges():
         functions.remove(to)
-
-
-
-
-
-
-
-
-
-
-

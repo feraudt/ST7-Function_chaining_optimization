@@ -33,7 +33,7 @@ physical_graph = graph_generation.random_connex_graph(
     nb_server, min_link, range_cpu, range_bandwidth)
 
 # Affichage
-save_graph(physical_graph, 'Graphe Physique')
+save_graph(physical_graph, 'Graphe Physique', bwd=True, cpu=True)
 
 
 # Graphe Virtuel
@@ -55,16 +55,16 @@ flows = flow_sort(flows)
 # Affichage des flows un par un et de la requête
 for i, f in enumerate(flows):
     name = 'Flow {} '.format(i+1)
-    print(name, list(f))
     save_graph(f, name, 'fig/Virtual_Graph/')
 if len(flows) > 1:
-    save_graph(global_graph, 'Graphe Virtuel', 'fig/Virtual_Graph/')
+    save_graph(global_graph, 'Graphe Virtuel',
+               'fig/Virtual_Graph/', bwd=True, cpu=True)
 
 #################################
 # Implémentation du Pseudo-Code #
 #################################
 
-# Place les chaines sans utiliser les teiner trees
+# Place les chaines sans utiliser les steiner trees
 available_graph = nx.Graph.copy(physical_graph)
 placed_flows = []
 for flow in flows:
@@ -77,8 +77,6 @@ for flow in flows:
     # On travaille sur un sous graphe en bwd:
     bwd = get_bwd(flow)
     graph_bwd = bwd_sous_graph(available_graph, bwd)
-    save_graph(graph_bwd, flow_name +
-               ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
 
     placed_flow = best_fit_nodes(flow, available_graph)
     placed_flows.append(placed_flow)
@@ -92,6 +90,13 @@ for flow in flows:
     print('Functions : ', flow_view)
     print('Servers : ', servers_view)
 
+    physical_flow = nx.Graph()
+    physical_flow.add_nodes_from(servers_view)
+    for x, y in zip(servers_view[:-1], servers_view[1:]):
+        physical_flow.add_edge(x, y)
+
+    save_graph(graph_bwd, flow_name +
+               ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin, bwd=True, cpu=True, flow=physical_flow)
 
 # Approche avec steiner trees
 # Étape 0

@@ -8,10 +8,12 @@ def generate_flow(nodelist, range_cpu, range_bandwidth):
     # Construct the list with cpu and bwd
     # func représente le numéro de la fonction virtuelle (utile pour pas relier les flow n'importe comment)
     # par exemple les attributs func de [5,6,7,4] seront [1,2,3,4]
+    bwd = rd.randint(*range_bandwidth)
+
     nodes = [(node, {'cpu': rd.randint(*range_cpu), 'func': i+1})
              for i, node in enumerate(nodelist)]
     edges = [(nodelist[i], nodelist[i+1],
-              {'bandwidth': rd.randint(*range_bandwidth)}) for i in range(len(nodelist)-1)]
+              {'bandwidth': bwd}) for i in range(len(nodelist)-1)]
 
     flow = nx.DiGraph()
     flow.add_nodes_from(nodes)
