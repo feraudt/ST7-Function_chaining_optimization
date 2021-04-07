@@ -62,6 +62,7 @@ def placed_functions(graph_bwd) :
         if graph_bwd.nodes[node]['functions'] != None :
             for func in graph_bwd.nodes[node]['functions'] :
                 placed_funcs[func] = node
+    print('Already placed functions : ', placed_funcs)
     return placed_funcs
 
 
@@ -69,6 +70,11 @@ def placed_functions(graph_bwd) :
 def worst_fit_path(placed_flow, available_graph) :
     bwd = get_bwd(placed_flow)
     graph_bwd = bwd_sous_graph(available_graph, bwd)
+    path_servers = []
+
+
+def paths_to_function(start_func, end_func, bwd, graph_bwd) :
+    nodes_by_step = [{graph_bwd.nodes[start-func]['place']: {'parent':None, 'nb_edges':0, 'min_bwd':math.inf}}]
 
 
 

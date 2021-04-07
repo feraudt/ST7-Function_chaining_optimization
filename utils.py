@@ -2,6 +2,7 @@ from itertools import combinations, groupby
 import random as rd
 import networkx as nx
 import matplotlib.pyplot as plt
+import math
 import os
 
 
@@ -122,3 +123,20 @@ def cpu_sous_graph(G, cpu_seuil):
     F.remove_nodes_from(nodes_to_delete)
 
     return F
+
+
+def find_origin_chain(flow):
+    functions = [func for func in flow.nodes()]
+    for fr, to in flow.edges() :
+        functions.remove(to)
+
+
+
+
+
+
+
+
+
+
+
