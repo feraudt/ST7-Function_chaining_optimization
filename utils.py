@@ -33,11 +33,11 @@ def plot_graph(G, title='', bwd=False, cpu=False, flow=None):
                     if node in f.nodes():
                         color_map[i] = color
 
-            edge_color_map = ['k' for node in G.nodes()]
+            edge_color_map = ['k' for edges in G.edges()]
             for i, edge in enumerate(G.edges()):
                 for f, color in zip(flow, color_flow):
                     if edge in f.edges():
-                        color_map[i] = color
+                        edge_color_map[i] = color
 
         else:
             color_map = ['green' if node in flow.nodes(

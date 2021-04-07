@@ -63,15 +63,17 @@ if len(flows) > 1:
 #################################
 # Implémentation du Pseudo-Code #
 #################################
-
 # Place les chaines sans utiliser les steiner trees
+
+
 available_graph = nx.Graph.copy(physical_graph)
 placed_flows = []
 placed_physical_flows = []
+fig_chemin = 'fig/Flows/'
+
 for flow in flows:
     # Variables pour les figures
     flow_id = flows.index(flow)+1
-    fig_chemin = 'fig/flows/flow_{}/'.format(flow_id)
     flow_name = 'Flow {}'.format(flow_id)
     print('\n'+flow_name)
 
@@ -95,13 +97,15 @@ for flow in flows:
 
     placed_physical_flows.append(physical_flow)
 
-    save_graph(available_graph, flow_name +
-               ' Graphe Physique réduit par bwd = {}'.format(get_bwd(flow)), fig_chemin, bwd=True, cpu=True, flow=physical_flow)
+    save_graph(available_graph, flow_name + ' placé sur le Graphe Physique',
+               fig_chemin, bwd=True, cpu=True, flow=physical_flow)
 
 
 save_graph(available_graph, 'Graphe Physique Complet', fig_chemin,
            bwd=True, cpu=True, flow=placed_physical_flows)
-# Approche avec steiner trees
+
+###########################################
+# Approche avec les arbres de Steiner
 # Étape 0
 
 # On distingue les chaines indépendantes et les dépendantes.
@@ -110,28 +114,28 @@ independant_flow = [flow for flow_id, flow in enumerate(
     flows) if len(common_nodes[flow_id]) == 0]
 dependant_flow = [flow for flow_id, flow in enumerate(
     flows) if len(common_nodes[flow_id]) > 0]
-# On initialise le graph physique disponnible
+
+
+# On initialise le graph physique disponible
 available_graph = nx.Graph.copy(physical_graph)
+placed_flows = []
+placed_physical_flows = []
 
 # Étape 1
 
 # On place les chaines dépendantes
 
-placed_flows = []
-
 for flow in dependant_flow:
 
     # Variables pour les figures
     flow_id = flows.index(flow)+1
-    fig_chemin = 'fig/Dependant_flow/flow_{}/'.format(flow_id)
+    fig_chemin = 'fig/Steiner/Dependant/'
     flow_name = 'Flow {}'.format(flow_id)
     print('\n'+flow_name)
 
     # On travaille sur un sous graphe en bwd:
     bwd = get_bwd(flow)
     graph_bwd = bwd_sous_graph(available_graph, bwd)
-    save_graph(graph_bwd, flow_name +
-               ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
 
     # Rechercher un arbre de Steiner avec les noeuds communs de la chaine avec les chaines déjà placées
     # Si c'est la première chaine -> on la place librement (T = [])
@@ -149,26 +153,67 @@ for flow in dependant_flow:
     if len(list(steiner_tree)) > 0:  # Si on a au moins 1 node dans le graphe (sinon erreur...)
         save_graph(steiner_tree, flow_name + ' Steiner Tree', fig_chemin)
 
-    placed_flows.append(flow)
+    # Maintenant qu'on a le steiner on place ce qu'on peut:
+
+    placed_flow = best_fit_nodes(flow, available_graph)
+    placed_flows.append(placed_flow)
+
+    # On affiche le placement
+    flow_view = []
+    servers_view = []
+    for func in placed_flow.nodes(data=True):
+        flow_view.append(func[0])
+        servers_view.append(func[1]['place'])
+    print('Functions : ', flow_view)
+    print('Servers : ', servers_view)
+
+    physical_flow = nx.Graph()
+    physical_flow.add_nodes_from(servers_view)
+    for x, y in zip(servers_view[:-1], servers_view[1:]):
+        # à remplacer par le path
+        physical_flow.add_edge(x, y)
+
+    placed_physical_flows.append(physical_flow)
+
+    save_graph(available_graph, flow_name + ' placé sur le Graphe Physique',
+               fig_chemin, bwd=True, cpu=True, flow=physical_flow)
 
 # Étape 2
 
-# On place les chaines indépendantes -> inverser étape 1 et 2 non ?
+# On place les chaines indépendantes
 # On place les fonctions sur les serveurs par best fit
+# c'est la même chose que lors de l'approche sans Steiner Tree
 
-indep_placed_flows = []
 for flow in independant_flow:
     # Variables pour les figures
-    flow_id = independant_flow.index(flow)+1
-    fig_chemin = 'fig/Independant_flow/flow_{}/'.format(flow_id)
+    flow_id = flows.index(flow)+1
+    fig_chemin = 'fig/Steiner/Independant/'
     flow_name = 'Flow {}'.format(flow_id)
     print('\n'+flow_name)
 
-    # On travaille sur un sous graphe en bwd:
-    bwd = get_bwd(flow)
-    graph_bwd = bwd_sous_graph(available_graph, bwd)
-    save_graph(graph_bwd, flow_name +
-               ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
-
     placed_flow = best_fit_nodes(flow, available_graph)
-    indep_placed_flows.append(placed_flow)
+    placed_flows.append(placed_flow)
+
+    # On affiche le placement
+    flow_view = []
+    servers_view = []
+    for func in placed_flow.nodes(data=True):
+        flow_view.append(func[0])
+        servers_view.append(func[1]['place'])
+    print('Functions : ', flow_view)
+    print('Servers : ', servers_view)
+
+    physical_flow = nx.Graph()
+    physical_flow.add_nodes_from(servers_view)
+    for x, y in zip(servers_view[:-1], servers_view[1:]):
+        # à remplacer par le path
+        physical_flow.add_edge(x, y)
+
+    placed_physical_flows.append(physical_flow)
+
+    save_graph(available_graph, flow_name + ' placé sur le Graphe Physique',
+               fig_chemin, bwd=True, cpu=True, flow=physical_flow)
+
+
+save_graph(available_graph, 'Graphe Physique Complet', fig_chemin,
+           bwd=True, cpu=True, flow=placed_physical_flows)
