@@ -64,8 +64,8 @@ if len(flows) > 1:
 #################################
 # Implémentation du Pseudo-Code #
 #################################
-# Place les chaines sans utiliser les steiner trees
 
+# Place les chaines sans utiliser les steiner trees
 
 available_graph = copy.deepcopy(physical_graph)
 placed_flows = []
@@ -107,7 +107,8 @@ for flow in flows:
 save_graph(available_graph, 'Graphe Physique Complet', fig_chemin,
            bwd=True, cpu=True, flow=placed_physical_flows)
 
-###########################################
+###
+
 # Approche avec les arbres de Steiner
 # Étape 0
 
