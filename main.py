@@ -67,16 +67,13 @@ if len(flows) > 1:
 # Place les chaines sans utiliser les steiner trees
 available_graph = nx.Graph.copy(physical_graph)
 placed_flows = []
+placed_physical_flows = []
 for flow in flows:
     # Variables pour les figures
     flow_id = flows.index(flow)+1
     fig_chemin = 'fig/flows/flow_{}/'.format(flow_id)
     flow_name = 'Flow {}'.format(flow_id)
     print('\n'+flow_name)
-
-    # On travaille sur un sous graphe en bwd:
-    bwd = get_bwd(flow)
-    graph_bwd = bwd_sous_graph(available_graph, bwd)
 
     placed_flow = best_fit_nodes(flow, available_graph)
     placed_flows.append(placed_flow)
@@ -93,11 +90,17 @@ for flow in flows:
     physical_flow = nx.Graph()
     physical_flow.add_nodes_from(servers_view)
     for x, y in zip(servers_view[:-1], servers_view[1:]):
+        # à remplacer par le path
         physical_flow.add_edge(x, y)
 
-    save_graph(graph_bwd, flow_name +
-               ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin, bwd=True, cpu=True, flow=physical_flow)
+    placed_physical_flows.append(physical_flow)
 
+    save_graph(available_graph, flow_name +
+               ' Graphe Physique réduit par bwd = {}'.format(get_bwd(flow)), fig_chemin, bwd=True, cpu=True, flow=physical_flow)
+
+
+save_graph(available_graph, 'Graphe Physique Complet', fig_chemin,
+           bwd=True, cpu=True, flow=placed_physical_flows)
 # Approche avec steiner trees
 # Étape 0
 

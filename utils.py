@@ -22,13 +22,33 @@ def plot_graph(G, title='', bwd=False, cpu=False, flow=None):
     plt.title(title)
     pos = nx.kamada_kawai_layout(G)
 
-    color_map = ['green' if flow and node in flow.nodes(
-    ) else '#1f78b4' for node in G.nodes()]
-    edge_color_map = ['green' if flow and edge in flow.edges(
-    ) else 'k' for edge in G.edges()]
+    if flow:
+        if isinstance(flow, list):
+            color_flow = ["#"+''.join([rd.choice('0123456789ABCDEF')
+                                       for j in range(6)]) for i in range(len(flow))]
 
-    nx.draw(G, pos, node_color=color_map,
-            edge_color=edge_color_map, with_labels=True)
+            color_map = ['#1f78b4' for node in G.nodes()]
+            for i, node in enumerate(G.nodes()):
+                for f, color in zip(flow, color_flow):
+                    if node in f.nodes():
+                        color_map[i] = color
+
+            edge_color_map = ['k' for node in G.nodes()]
+            for i, edge in enumerate(G.edges()):
+                for f, color in zip(flow, color_flow):
+                    if edge in f.edges():
+                        color_map[i] = color
+
+        else:
+            color_map = ['green' if node in flow.nodes(
+            ) else '#1f78b4' for node in G.nodes()]
+            edge_color_map = ['green' if edge in flow.edges(
+            ) else 'k' for edge in G.edges()]
+
+        nx.draw(G, pos, node_color=color_map,
+                edge_color=edge_color_map, with_labels=True)
+    else:
+        nx.draw(G, pos, with_labels=True)
 
     if bwd:
         elabels = {}
