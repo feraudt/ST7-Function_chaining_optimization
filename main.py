@@ -6,6 +6,7 @@ import random as rd
 import time
 import os
 import shutil
+import copy
 
 import graph_generation
 from utils import *
@@ -66,7 +67,7 @@ if len(flows) > 1:
 # Place les chaines sans utiliser les steiner trees
 
 
-available_graph = nx.Graph.copy(physical_graph)
+available_graph = copy.deepcopy(physical_graph)
 placed_flows = []
 placed_physical_flows = []
 fig_chemin = 'fig/Flows/'
@@ -117,7 +118,7 @@ dependant_flow = [flow for flow_id, flow in enumerate(
 
 
 # On initialise le graph physique disponible
-available_graph = nx.Graph.copy(physical_graph)
+available_graph = copy.deepcopy(physical_graph)
 placed_flows = []
 placed_physical_flows = []
 
@@ -141,19 +142,31 @@ for flow in dependant_flow:
     # Si c'est la première chaine -> on la place librement (T = [])
     # Pour les suivantes on regarde les fonctions déjà déployées: (T=[noeud en commun avec les précédents])
     virtual_terminal_nodes = dependance(flow, placed_flows)
-    print('T = ', virtual_terminal_nodes)
 
-    # Il faudra prendre à terme les serveurs physiques sur lesquels seront placés les virtual_terminal_nodes
-    # physical_terminal_nodes =
+    placed_funcs = placed_functions(available_graph)
+    physical_terminal_nodes = [placed_funcs[node]
+                               for node in virtual_terminal_nodes]
+
+    print('vT = ', virtual_terminal_nodes)
+    print('pT = ', physical_terminal_nodes)
 
     # Steiner tree minimisant la bandwidth utilisée donc le nombre d'arrête -> weight=None
     steiner_tree = nxa.steinertree.steiner_tree(
-        graph_bwd, virtual_terminal_nodes, weight=None)
+        graph_bwd, physical_terminal_nodes, weight=None)
 
     if len(list(steiner_tree)) > 0:  # Si on a au moins 1 node dans le graphe (sinon erreur...)
         save_graph(steiner_tree, flow_name + ' Steiner Tree', fig_chemin)
 
     # Maintenant qu'on a le steiner on place ce qu'on peut:
+    if len(list(steiner_tree)) >= 3:  # Si on a au moins 3 éléments: deux terminaux et un noeud à utiliser
+        index_mini = list(flow).index(virtual_terminal_nodes[0])
+        index_maxi = list(flow).index(virtual_terminal_nodes[-1])
+        # node_between_terminal représente les func virtuelles que l'on pourrait placer sur l'arbre de Steiner
+        node_between_terminal = [node for node in list(
+            flow)[index_mini+1:index_maxi] if node not in virtual_terminal_nodes]
+        # server_between_terminal représente les serveurs utilisable pour déployer les funcs
+        server_between_terminal = [server for server in list(
+            steiner_tree) if server not in physical_terminal_nodes]
 
     placed_flow = best_fit_nodes(flow, available_graph)
     placed_flows.append(placed_flow)
