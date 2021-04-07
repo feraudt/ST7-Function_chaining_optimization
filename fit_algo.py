@@ -82,6 +82,24 @@ def worst_fit_path(placed_flow, available_graph):
     return path_servers
 
 
+def chemin_to_print(chemin):
+    # Renvoie la liste de serveur à suivre sans doublons
+    servers = [tup[0] for tup in chemin]
+    res = []
+    for i, s in enumerate(servers):
+        if i < len(servers) - 1 and s != servers[i+1]:
+            res.append(s)
+    res.append(servers[-1])
+    return res
+
+
+def chemin_to_edges(chemin):
+    # servers = liste des serveurs dans l'ordre
+    servers = [tup[0] for tup in chemin]
+    edges = [(x, y) for x, y in zip(servers[:-1], servers[1:]) if x != y]
+    return edges
+
+
 def paths_to_function(start_func, end_func, bwd, placed_flow, graph_bwd, available_graph):
     end_server = placed_flow.nodes[end_func]['place']
     nodes_by_step = [{placed_flow.nodes[start_func]['place']: {
