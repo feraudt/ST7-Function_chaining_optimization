@@ -8,10 +8,12 @@ def generate_flow(nodelist, range_cpu, range_bandwidth):
     # Construct the list with cpu and bwd
     # func représente le numéro de la fonction virtuelle (utile pour pas relier les flow n'importe comment)
     # par exemple les attributs func de [5,6,7,4] seront [1,2,3,4]
+    bwd = rd.randint(*range_bandwidth)
+
     nodes = [(node, {'cpu': rd.randint(*range_cpu), 'func': i+1})
              for i, node in enumerate(nodelist)]
     edges = [(nodelist[i], nodelist[i+1],
-              {'bandwidth': rd.randint(*range_bandwidth)}) for i in range(len(nodelist)-1)]
+              {'bandwidth': bwd}) for i in range(len(nodelist)-1)]
 
     flow = nx.DiGraph()
     flow.add_nodes_from(nodes)
@@ -19,7 +21,8 @@ def generate_flow(nodelist, range_cpu, range_bandwidth):
 
     return flow
 
-def generate_request(range_flow, range_node, range_cpu, range_bandwidth, proba_use_a_previous_node):
+
+def generate_request(range_flow, range_node, range_cpu, range_bandwidth, proba_dependance):
     # Une requête a une liste de flow (flows), chaque flow est un graphe orienté.
     # Elle a aussi un graphe global (global_graph) qui représente toutes les chaines sur le même graphe
     flows = []
@@ -32,7 +35,7 @@ def generate_request(range_flow, range_node, range_cpu, range_bandwidth, proba_u
 
         nodelist = []
         for node in range(nb_nodes):
-            if len(existing_nodes) > 0 and rd.random() < proba_use_a_previous_node:
+            if len(existing_nodes) > 0 and rd.random() < proba_dependance:
                 # On choisi une node précédente avec la même func
                 possible_nodes = []
                 for node in existing_nodes:

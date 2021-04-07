@@ -16,18 +16,67 @@ def shell_list(nb_nodes, nb_group):
     return slist
 
 
-def plot_graph(G, title=''):
+def plot_graph(G, title='', bwd=False, cpu=False, flow=None):
+
     plt.plot()
     plt.title(title)
-    nx.draw(G, pos=nx.kamada_kawai_layout(G), with_labels=True)
+    pos = nx.kamada_kawai_layout(G)
+
+    if flow:
+        if isinstance(flow, list):
+            color_flow = ["#"+''.join([rd.choice('0123456789ABCDEF')
+                                       for j in range(6)]) for i in range(len(flow))]
+
+            color_map = ['#1f78b4' for node in G.nodes()]
+            for i, node in enumerate(G.nodes()):
+                for f, color in zip(flow, color_flow):
+                    if node in f.nodes():
+                        color_map[i] = color
+
+            edge_color_map = ['k' for edges in G.edges()]
+            for i, edge in enumerate(G.edges()):
+                for f, color in zip(flow, color_flow):
+                    if edge in f.edges():
+                        edge_color_map[i] = color
+
+        else:
+            color_map = ['green' if node in flow.nodes(
+            ) else '#1f78b4' for node in G.nodes()]
+            edge_color_map = ['green' if edge in flow.edges(
+            ) else 'k' for edge in G.edges()]
+
+        nx.draw(G, pos, node_color=color_map,
+                edge_color=edge_color_map, with_labels=True)
+    else:
+        nx.draw(G, pos, with_labels=True)
+
+    if bwd:
+        elabels = {}
+        for u, v, data in G.edges(data=True):
+            elabels[(u, v)] = str(data['bandwidth'])
+
+        nx.draw_networkx_edge_labels(
+            G, pos, edge_labels=elabels, font_size=8, font_color='darkgreen')
+
+    if cpu:
+        clabels = {}
+        for u, data in G.nodes(data=True):
+            clabels[u] = str(data['cpu'])
+        poshigher = {}
+        y_off = 0.1
+        for k, v in pos.items():
+            poshigher[k] = (v[0], v[1]+y_off)
+        nx.draw_networkx_labels(
+            G, poshigher, labels=clabels, font_size=10, font_color='darkred')
+
     plt.show()
 
 
-def save_graph(G, title='', chemin='fig/'):
+def save_graph(G, title='', chemin='fig/', bwd=False, cpu=False, flow=None):
     if not os.path.isdir(chemin):
         os.makedirs(chemin)
     fig = plt.figure()
-    plot_graph(G, title)
+    plot_graph(G, title, bwd, cpu, flow)
     fig.savefig(chemin + title + '.png')
 
 
@@ -101,15 +150,5 @@ def cpu_sous_graph(G, cpu_seuil):
     F.remove_nodes_from(nodes_to_delete)
 
     return F
-
-
-
-
-
-
-
-
-
-
 
 
