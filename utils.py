@@ -2,6 +2,7 @@ from itertools import combinations, groupby
 import random as rd
 import networkx as nx
 import matplotlib.pyplot as plt
+import math
 import os
 
 
@@ -77,6 +78,7 @@ def flow_sort(flows):
     # La key lambda va chercher la bwd du premier edge
     return sorted(flows, key=lambda f: get_bwd(f), reverse=True)
 
+
 def cpu_sous_graph(G, cpu_seuil):
     # On note les nodes a supprimer
     nodes_to_delete = []
@@ -97,6 +99,13 @@ def cpu_sous_graph(G, cpu_seuil):
     F.remove_nodes_from(nodes_to_delete)
 
     return F
+
+
+def find_origin_chain(flow):
+    functions = [func for func in flow.nodes()]
+    for fr, to in flow.edges() :
+        functions.remove(to)
+
 
 
 

@@ -63,6 +63,25 @@ if len(flows) > 1:
 # Implémentation du Pseudo-Code #
 #################################
 
+# Place les chaines sans utiliser les teiner trees
+available_graph = nx.Graph.copy(physical_graph)
+placed_flows = []
+for flow in flows :
+    # Variables pour les figures
+    flow_id = flows.index(flow)+1
+    fig_chemin = 'fig/flows/flow_{}/'.format(flow_id)
+    flow_name = 'Flow {}'.format(flow_id)
+    print('\n'+flow_name)
+
+    # On travaille sur un sous graphe en bwd:
+    bwd = get_bwd(flow)
+    graph_bwd = bwd_sous_graph(available_graph, bwd)
+    save_graph(graph_bwd, flow_name + ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
+
+    placed_flow = best_fit_nodes(flow, available_graph)
+    placed_flows.append(placed_flow)
+
+# Approche avec steiner trees
 ## Étape 0
 
 # On distingue les chaines indépendantes et les dépendantes.
