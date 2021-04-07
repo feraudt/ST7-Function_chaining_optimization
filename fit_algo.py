@@ -66,5 +66,20 @@ def placed_functions(graph_bwd) :
 
 
 
-#def worst_fit_path(placed_flow, graph_bwd, available_graph)
+def worst_fit_path(placed_flow, available_graph) :
+    bwd = get_bwd(placed_flow)
+    graph_bwd = bwd_sous_graph(available_graph, bwd)
+
+
+
+
+
+
+
+
+
+
+
+
+
 

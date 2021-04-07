@@ -39,13 +39,14 @@ save_graph(physical_graph, 'Graphe Physique')
 ## Graphe Virtuel
 
 # v de vrange est pour virtuel (pour pas mélanger)
-vrange_flow = (3, 3)
+vrange_flow = (3, 4)
 vrange_node = (4, 7)
 vrange_cpu = (1, 5)
 vrange_bandwidth = (5, 10)
+# Probablilité d'utiliser une node d'une chaine précédente (de relier les deux chaines)
+proba_dependance = 0.2
 
-(global_graph, flows) = graph_generation.generate_request(
-    vrange_flow, vrange_node, vrange_cpu, vrange_bandwidth)
+(global_graph, flows) = graph_generation.generate_request(vrange_flow, vrange_node, vrange_cpu, vrange_bandwidth, proba_dependance)
 
 # On trie les chaines par bwd décroissante
 flows = flow_sort(flows)
@@ -64,7 +65,6 @@ if len(flows) > 1:
 
 ## Étape 0
 
-
 # On distingue les chaines indépendantes et les dépendantes.
 common_nodes = get_common_nodes(flows)
 independant_flow = [flow for flow_id, flow in enumerate(
@@ -75,28 +75,6 @@ dependant_flow = [flow for flow_id, flow in enumerate(
 available_graph = nx.Graph.copy(physical_graph)
 
 ## Étape 1
-
-# On place les chaines indépendantes -> inverser étape 1 et 2 non ?
-# On place les fonctions sur les serveurs par best fit
-
-indep_placed_flows = []
-for flow in independant_flow :
-    # Variables pour les figures
-    flow_id = independant_flow.index(flow)+1
-    fig_chemin = 'fig/Independant_flow/flow_{}/'.format(flow_id)
-    flow_name = 'Flow {}'.format(flow_id)
-    print('\n'+flow_name)
-
-    # On travaille sur un sous graphe en bwd:
-    bwd = get_bwd(flow)
-    graph_bwd = bwd_sous_graph(available_graph, bwd)
-    save_graph(graph_bwd, flow_name + ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
-
-    placed_flow = best_fit_nodes(flow, available_graph)
-    indep_placed_flows.append(placed_flow)
-
-
-## Étape 2
 
 # On place les chaines dépendantes
 
@@ -133,4 +111,28 @@ for flow in dependant_flow:
         save_graph(steiner_tree, flow_name + ' Steiner Tree', fig_chemin)
 
     placed_flows.append(flow)
+
+## Étape 2
+
+# On place les chaines indépendantes -> inverser étape 1 et 2 non ?
+# On place les fonctions sur les serveurs par best fit
+
+indep_placed_flows = []
+for flow in independant_flow :
+    # Variables pour les figures
+    flow_id = independant_flow.index(flow)+1
+    fig_chemin = 'fig/Independant_flow/flow_{}/'.format(flow_id)
+    flow_name = 'Flow {}'.format(flow_id)
+    print('\n'+flow_name)
+
+    # On travaille sur un sous graphe en bwd:
+    bwd = get_bwd(flow)
+    graph_bwd = bwd_sous_graph(available_graph, bwd)
+    save_graph(graph_bwd, flow_name + ' Graphe Physique réduit par bwd = {}'.format(bwd), fig_chemin)
+
+    placed_flow = best_fit_nodes(flow, available_graph)
+    indep_placed_flows.append(placed_flow)
+
+
+
 
