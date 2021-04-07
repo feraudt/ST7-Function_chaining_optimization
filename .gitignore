@@ -130,3 +130,6 @@ dmypy.json
 
 #Dossier des figures
 fig/
+
+#Dossier du choix du bash VSC
+.vscode/settings.json
